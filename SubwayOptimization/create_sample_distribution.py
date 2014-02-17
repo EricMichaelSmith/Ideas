@@ -13,11 +13,11 @@ import numpy as np
 
 
 
-def create_sample_distribution(plotDistributionL = True):
+def main(plotDistributionL = True):
     """Creates a simple distribution comprised of three Gaussian-noise, Gaussian-shaped probability clouds with a Gaussian-noise background."""
 
-    numXPoints = 128
-    numYPoints = 128
+    numXPoints = 200
+    numYPoints = 200
     distributionM = abs(np.random.randn(numXPoints, numYPoints))
     
     # Add background noise
@@ -62,4 +62,4 @@ def plot_sample_distribution(distributionM):
     
 
 if __name__ == "__main__":
-    create_sample_distribution(1)
+    main(plotDistributionL = True)
