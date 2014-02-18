@@ -16,15 +16,15 @@ import numpy as np
 def main(plotDistributionL = True):
     """Creates a simple distribution comprised of three Gaussian-noise, Gaussian-shaped probability clouds with a Gaussian-noise background."""
 
-    numXPoints = 200
-    numYPoints = 200
-    distributionM = abs(np.random.randn(numXPoints, numYPoints))
+    numXPoints = 128
+    numYPoints = 128
+    distributionM = abs(0.3*np.random.randn(numXPoints, numYPoints))
     
     # Add background noise
-    cloudCenter2C = np.array([[30, 15],
-                              [20, 30],
+    cloudCenter2C = np.array([[40, 15],
+                              [20, 60],
                               [100, 100]])
-    cloudMagnitudeC = np.array([10, 7, 15])
+    cloudMagnitudeC = np.array([100, 70, 150])
     cloudWidthC = np.array([7, 7, 7])
     
     # Add Gaussian clouds with Gaussian noise
