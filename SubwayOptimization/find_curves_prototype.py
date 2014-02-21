@@ -7,7 +7,7 @@ Created on Sun Feb 16 12:39:04 2014
 Run the entire prototype of generating a population distribution, fitting curves to it, and plotting the output.
 """
 
-import calculateCurveWeighting, create_sample_distribution, findBestFitCurve
+import calculate_curve_weighting, create_sample_distribution, find_best_fit_curve
 
 
 
@@ -25,10 +25,10 @@ def main():
   for lCurve in range(numCurves):
     
     # Find the best-fit curve through logistic regression.
-    curvePoints2C = findBestFitCurve(distributionM)
+    curvePoints2C = find_best_fit_curve.main(distributionM)
     
     # Calculate contribution of curve to weight matrix.
-    weightContributionM = calculateCurveWeighting(curvePoints2C, distributionM.shape)
+    weightContributionM = calculate_curve_weighting.main(curvePoints2C, distributionM.shape)
     
     # Subtract contribution from weight matrix.
     distributionM -= weightContributionM
