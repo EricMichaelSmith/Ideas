@@ -30,7 +30,7 @@ def main(plotDistributionL = True):
     # Add Gaussian clouds with Gaussian noise
     numClouds = cloudCenter2C.shape[0]
     for lCloud in range(numClouds):
-        additionalDistributionM = np.array(np.empty(distributionM.shape))
+        additionalDistributionM = np.zeros(distributionM.shape)
         additionalDistributionM.fill(np.nan)
         # Create empty array containing the amount by which this cloud adds onto the existing distribution
         
