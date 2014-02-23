@@ -12,6 +12,7 @@ Concerns:
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 
@@ -20,11 +21,10 @@ def main(distributionM):
   # Smooth the distribution
   smoothedDistributionM = smooth_image(distributionM)
   
-  # {{{have flag to plot smoothed image}}}
-  
+  # [[[probably remove eventually]]]
+  plt.imshow(smoothedDistributionM)
+    
   # {{{find curve(s) through image}}}
-  
-  return curvePoints2C
   
 
 
