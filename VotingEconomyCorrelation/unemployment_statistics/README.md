@@ -1,0 +1,1 @@
+From http://www.bls.gov/lau/tables.htm
