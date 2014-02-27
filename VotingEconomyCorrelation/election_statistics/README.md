@@ -1,3 +1,4 @@
-2008 election results possibly from Ansolabehere, Stephen; Palmer, Maxwell; Lee, Amanda, 2014, "Precinct-Level Election Data", http://hdl.handle.net/1902.1/21919 UNF:5:5C9UfGjdLy2ONVPtgr45qA== Harvard Election Data Archive [Distributor] V1 [Version]
+2008 election results from http://dds.cr.usgs.gov/pub/data/nationalatlas/elpo08p020_nt00335.tar.gz [see http://www.nationalatlas.gov/metadata/popul08.faq.html#getacopy for details]
+- Use pyshp ('pip install pyshp') to read the shp file (right? Try this out...)
 
 2012 election results from http://www.theguardian.com/news/datablog/2012/nov/07/us-2012-election-county-results-download#data
