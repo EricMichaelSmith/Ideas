@@ -42,6 +42,18 @@ def main():
   
 
 def read_unemployment_file(pathS, fileNameS):
-    tableM = np.genfromtxt(os.path.join(pathS, fileNameS), skip_header=6, skip_footer=3210)
-    # {{{other stuff. Fix fields that didn't import correctly and obviously don't skip so many lines at the end.}}}
+    tableM = np.genfromtxt(os.path.join(pathS, fileNameS),
+                           delimiter=[18, 7, 6, 50, 4, 14, 13, 11, 9], 
+                           dtype=[('laus_code', 'S15'),
+                                  ('state_fips_code', '<i4'),
+                                  ('county_fips_code', '<i4'),
+                                  ('county_and_state', 'S50'),
+                                  ('year', '<i4'), 
+                                  ('labor_force', 'S14'),
+                                  ('employed', 'S13'), 
+                                  ('unemployed_level', 'S11'), 
+                                  ('unemployed_rate', '<f8')], 
+                           skip_header=6,
+                           skip_footer=2)
+    tableM = tableM.view(np.recarray)
     return tableM
