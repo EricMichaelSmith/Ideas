@@ -6,9 +6,10 @@ Created on Fri Feb 28 07:56:38 2014
 
 Determines whether a correlation exists between 2008/2012 voting shifts and unemployment shifts
 
-2014-03-01: See http://docs.scipy.org/doc/numpy/user/basics.io.genfromtxt.html
+2014-03-01: Figure out how to delete a particular row from every record in an np.recarray
 """
 
+import config
 import numpy as np
 import os
 
@@ -16,11 +17,12 @@ import os
 
 def main():
     
-    # Demo
+    # Demo: reading in one of the unemployment files
     fileNameS = 'laucnty08.txt'
-    pathS = r'C:\E\GitHub\Computing\Ideas\VotingEconomyCorrelation\unemployment_statistics'
-    tableM = read_unemployment_file(pathS, fileNameS)
-    return tableM
+    unemployment08_M = read_unemployment_file(fileNameS)
+    
+    # Demo: reading in the 2012 election file
+    election12_M = read_election_2012_file()
   
   ## Load data: FIPS code, state name, county name, shape data, percentage voting for Obama in 2008 and 2012, percentage voting for McCain/Romney in 2008 and 2012, unemployment data per county for 2008, 2009, 2010, 2011, 2012
   
@@ -39,9 +41,31 @@ def main():
   # Depending on the correlations you find, plot the most interesting results on a county map of the US
   # {{{}}}
   
+    # [[[obviously temporary]]]
+    return (unemployment08_M, election12_M)
+  
+  
+  
+def read_election_2012_file():
+    filePathS = os.path.join(config.basePathS, "election_statistics",
+                             "US_elect_county__2012.csv")
+    fullTableM = np.genfromtxt(filePathS,
+                           delimiter=',',
+                           dtype=None,
+                           skip_header=1)
+    fipsIndex = 3
+    
+    # Remove entries that correspond to the voting records of the entire state
+    validFipsLC = fullTableM[:, fipsIndex].astype(bool)
+#    fullTableM = fullTableM[validFipsLC][:]
+    
+    # {{{get the candidates to be in the right order}}}
+#    return fullTableM
+    return validFipsLC
   
 
-def read_unemployment_file(pathS, fileNameS):
+def read_unemployment_file(fileNameS):
+    pathS = os.path.join(config.basePathS, "unemployment_statistics")
     tableM = np.genfromtxt(os.path.join(pathS, fileNameS),
                            delimiter=[18, 7, 6, 50, 4, 14, 13, 11, 9], 
                            dtype=[('laus_code', 'S15'),
