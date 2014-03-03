@@ -9,9 +9,11 @@ Determines whether a correlation exists between 2008/2012 voting shifts and unem
 2014-03-01: Figure out how to delete a particular row from every record in an np.recarray
 """
 
-import config
 import numpy as np
 import os
+
+import config
+import read_election_2012_file
 
 
 
@@ -22,7 +24,7 @@ def main():
     unemployment08_M = read_unemployment_file(fileNameS)
     
     # Demo: reading in the 2012 election file
-    election12_M = read_election_2012_file()
+    output = read_election_2012_file.main()
   
   ## Load data: FIPS code, state name, county name, shape data, percentage voting for Obama in 2008 and 2012, percentage voting for McCain/Romney in 2008 and 2012, unemployment data per county for 2008, 2009, 2010, 2011, 2012
   
@@ -42,27 +44,9 @@ def main():
   # {{{}}}
   
     # [[[obviously temporary]]]
-    return (unemployment08_M, election12_M)
-  
-  
-  
-def read_election_2012_file():
-    filePathS = os.path.join(config.basePathS, "election_statistics",
-                             "US_elect_county__2012.csv")
-    fullTableM = np.genfromtxt(filePathS,
-                           delimiter=',',
-                           dtype=None,
-                           skip_header=1)
-    fipsIndex = 3
-    
-    # Remove entries that correspond to the voting records of the entire state
-    validFipsLC = fullTableM[:, fipsIndex].astype(bool)
-#    fullTableM = fullTableM[validFipsLC][:]
-    
-    # {{{get the candidates to be in the right order}}}
-#    return fullTableM
-    return validFipsLC
-  
+    return (unemployment08_M, output)
+
+
 
 def read_unemployment_file(fileNameS):
     pathS = os.path.join(config.basePathS, "unemployment_statistics")
