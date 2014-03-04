@@ -29,7 +29,7 @@ def main():
   ## Load data: FIPS code, state name, county name, shape data, percentage voting for Obama in 2008 and 2012, percentage voting for McCain/Romney in 2008 and 2012, unemployment data per county for 2008, 2009, 2010, 2011, 2012
   
   # Load election data
-  # {{{}}}
+  # {{{see https://code.google.com/p/pyshp/ and https://pypi.python.org/pypi/pyshp#id2 for working with shapefiles}}}
   
   # Transform all of that data into a usable form
   # {{{}}}
@@ -64,4 +64,11 @@ def read_unemployment_file(fileNameS):
                            skip_header=6,
                            skip_footer=2)
     tableM = tableM.view(np.recarray)
+
+    # Combine FIPS codes
+    numRows = tableM.state_fips_code.shape()[0]
+    for lRow in range(numRows):
+      tableM.fips_code[lRow] = int(str(tableM.state_fips_code[lRow]) +
+                                   str(tableM.county_fips_code[lRow]))
+                                   
     return tableM

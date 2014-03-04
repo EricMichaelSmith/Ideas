@@ -22,14 +22,31 @@ def main():
                               deletechars='',
                               replace_space='_')
                               
-#    fullTableM = np.genfromtxt(filePathS,
-#                           delimiter=',',
-#                           dtype=None,
-#                           skip_header=1)
                               
     # Remove entries that correspond to the voting records of the entire state
     validRowsLC = fullTableRA.FIPS_Code.astype(bool)
     
-    # {{{get the candidates to be in the right order}}}
+    # {{{get the candidates to be in the right order and create a subtable with only the rows and fields you need}}}
+    
 #    return fullTableM
     return validRowsLC
+    
+    
+    
+def extract_votes(fullTableRA, iRow):
+  numDemVotes = run_extract_votes_loop(fullTableRA, iRow, "Dem")
+  numGOPVotes = run_extract_votes_loop(fullTableRA, iRow, "GOP")
+  
+  return (numDemVotes, numGOPVotes)
+  
+  
+  
+def run_extract_votes_loop(fullTableRA, iRow, partyS):
+  if fullTableRA.Party[iRow] == partyS:
+    return fullTableRA.Votes[iRow]
+  else:
+    iParty = 0
+    while True:
+      iParty += 1
+      if fullTableRA("Party_" + str(iParty)) == partyS:
+        return fullTableRA("Votes_" + str(iParty))[iRow]
