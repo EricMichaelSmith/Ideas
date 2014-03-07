@@ -6,11 +6,12 @@ Created on Fri Feb 28 07:56:38 2014
 
 Determines whether a correlation exists between 2008/2012 voting shifts and unemployment shifts
 
-2014-03-01: Figure out how to delete a particular row from every record in an np.recarray
+2014-03-07: Pass the correct column names to pd.read_table
 """
 
 import numpy as np
 import os
+import pandas as pd
 
 import config
 import read_election_2012_file
@@ -20,11 +21,14 @@ import read_election_2012_file
 def main():
     
     # Demo: reading in one of the unemployment files
-    fileNameS = 'laucnty08.txt'
-    unemployment08_M = read_unemployment_file(fileNameS)
+    fileNameS_T = ('laucnty08.txt', 'laucnty09.txt', 'laucnty10.txt', 'laucnty11.txt',
+                  'laucnty12.txt')
+    unemploymentDF_T = list()
+    for fileNameS in fileNameS_T:
+      unemploymentDF_T.append(read_unemployment_file(fileNameS))
     
     # Demo: reading in the 2012 election file
-    output = read_election_2012_file.main()
+    election2012_DF = read_election_2012_file.main()
   
   ## Load data: FIPS code, state name, county name, shape data, percentage voting for Obama in 2008 and 2012, percentage voting for McCain/Romney in 2008 and 2012, unemployment data per county for 2008, 2009, 2010, 2011, 2012
   
@@ -44,31 +48,32 @@ def main():
   # {{{}}}
   
     # [[[obviously temporary]]]
-    return (unemployment08_M, output)
+    return (unemploymentDF_T, election2012_DF)
 
 
 
 def read_unemployment_file(fileNameS):
     pathS = os.path.join(config.basePathS, "unemployment_statistics")
-    tableM = np.genfromtxt(os.path.join(pathS, fileNameS),
-                           delimiter=[18, 7, 6, 50, 4, 14, 13, 11, 9], 
-                           dtype=[('laus_code', 'S15'),
-                                  ('state_fips_code', '<i4'),
-                                  ('county_fips_code', '<i4'),
-                                  ('county_and_state', 'S50'),
-                                  ('year', '<i4'), 
-                                  ('labor_force', 'S14'),
-                                  ('employed', 'S13'), 
-                                  ('unemployed_level', 'S11'), 
-                                  ('unemployed_rate', '<f8')], 
-                           skip_header=6,
-                           skip_footer=2)
-    tableM = tableM.view(np.recarray)
+    tableDF = pd.read_table(os.path.join(pathS, fileNameS))
+#    tableM = np.genfromtxt(os.path.join(pathS, fileNameS),
+#                           delimiter=[18, 7, 6, 50, 4, 14, 13, 11, 9], 
+#                           dtype=[('laus_code', 'S15'),
+#                                  ('state_fips_code', '<i4'),
+#                                  ('county_fips_code', '<i4'),
+#                                  ('county_and_state', 'S50'),
+#                                  ('year', '<i4'), 
+#                                  ('labor_force', 'S14'),
+#                                  ('employed', 'S13'), 
+#                                  ('unemployed_level', 'S11'), 
+#                                  ('unemployed_rate', '<f8')], 
+#                           skip_header=6,
+#                           skip_footer=2)
 
     # Combine FIPS codes
-    numRows = tableM.state_fips_code.shape()[0]
+    numRows = tableDF.state_fips_code.shape[0]
+    tableDF["fips_code"] = np.empty(numRows)
     for lRow in range(numRows):
-      tableM.fips_code[lRow] = int(str(tableM.state_fips_code[lRow]) +
-                                   str(tableM.county_fips_code[lRow]))
+      tableDF.fips_code[lRow] = int(str(tableDF.state_fips_code[lRow]) +
+                                   str(tableDF.county_fips_code[lRow]))
                                    
-    return tableM
+    return tableDF

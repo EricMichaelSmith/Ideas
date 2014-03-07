@@ -6,12 +6,10 @@ Created 2014-03-03
 Reads in 2012 US election results, from http://www.theguardian.com/news/datablog/2012/nov/07/us-2012-election-county-results-download#data
 """
 
-import config
-
-import numpy as np
 import os
-from pandas import Series, DataFrame
 import pandas as pd
+
+import config
 
 
 
@@ -32,10 +30,11 @@ def main():
       countyTableDF[iRow].numGOPVotes = extract_votes(countyTableDF[iRow], 2)
       
     # Extract the important fields for each row: State Postal, FIPS Code, County Name, TOTAL VOTES CAST, numDemVotes, numGOPVotes
-    # {{{}}}
+    desiredColumnsL = ["State_Postal", "FIPS_Code", "County_Name", "TOTAL_VOTES_CAST",
+                       "numDemVotes", "numGOPVotes"]
+    finalTableDF = countyTableDF.reindex(columns=desiredColumnsL)
     
-#    return fullTableM
-    return validRowsLC
+    return finalTableDF
     
     
     
