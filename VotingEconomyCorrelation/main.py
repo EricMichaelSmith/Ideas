@@ -5,16 +5,12 @@ Created on Fri Feb 28 07:56:38 2014
 @author: Eric Smith
 
 Determines whether a correlation exists between 2008/2012 voting shifts and unemployment shifts
-
-2014-03-07: Pass the correct column names to pd.read_table
 """
 
-import numpy as np
-import os
-import pandas as pd
-
-import config
 import read_election_2012_file
+reload(read_election_2012_file)
+import read_unemployment_file
+reload(read_unemployment_file)
 
 
 
@@ -23,9 +19,9 @@ def main():
     # Demo: reading in one of the unemployment files
     fileNameS_T = ('laucnty08.txt', 'laucnty09.txt', 'laucnty10.txt', 'laucnty11.txt',
                   'laucnty12.txt')
-    unemploymentDF_T = list()
+    unemploymentDF_L = list()
     for fileNameS in fileNameS_T:
-      unemploymentDF_T.append(read_unemployment_file(fileNameS))
+      unemploymentDF_L.append(read_unemployment_file.main(fileNameS))
     
     # Demo: reading in the 2012 election file
     election2012_DF = read_election_2012_file.main()
@@ -48,32 +44,5 @@ def main():
   # {{{}}}
   
     # [[[obviously temporary]]]
-    return (unemploymentDF_T, election2012_DF)
-
-
-
-def read_unemployment_file(fileNameS):
-    pathS = os.path.join(config.basePathS, "unemployment_statistics")
-    tableDF = pd.read_table(os.path.join(pathS, fileNameS))
-#    tableM = np.genfromtxt(os.path.join(pathS, fileNameS),
-#                           delimiter=[18, 7, 6, 50, 4, 14, 13, 11, 9], 
-#                           dtype=[('laus_code', 'S15'),
-#                                  ('state_fips_code', '<i4'),
-#                                  ('county_fips_code', '<i4'),
-#                                  ('county_and_state', 'S50'),
-#                                  ('year', '<i4'), 
-#                                  ('labor_force', 'S14'),
-#                                  ('employed', 'S13'), 
-#                                  ('unemployed_level', 'S11'), 
-#                                  ('unemployed_rate', '<f8')], 
-#                           skip_header=6,
-#                           skip_footer=2)
-
-    # Combine FIPS codes
-    numRows = tableDF.state_fips_code.shape[0]
-    tableDF["fips_code"] = np.empty(numRows)
-    for lRow in range(numRows):
-      tableDF.fips_code[lRow] = int(str(tableDF.state_fips_code[lRow]) +
-                                   str(tableDF.county_fips_code[lRow]))
-                                   
-    return tableDF
+#    return (unemploymentDF_L, election2012_DF)
+    return (unemploymentDF_L, election2012_DF)

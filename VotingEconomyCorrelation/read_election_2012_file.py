@@ -18,23 +18,25 @@ def main():
     # Read in 2012 election data
     filePathS = os.path.join(config.basePathS, "election_statistics",
                              "US_elect_county__2012.csv")
-    fullTableDF = pd.read_table(filePathS)                              
-                              
-    # Remove entries that correspond to the voting records of the entire state
-    validRowsLC = fullTableDF.FIPS_Code.astype(bool)
-    countyTableDF = fullTableDF[validRowsLC]
+    fullTableDF = pd.read_csv(filePathS)
+    print(fullTableDF)
     
-    # Extract the correct information for each row
-    for iRow in range(countyTableDF.shape[0]):
-      countyTableDF[iRow].numDemVotes = extract_votes(countyTableDF[iRow], 1)
-      countyTableDF[iRow].numGOPVotes = extract_votes(countyTableDF[iRow], 2)
-      
-    # Extract the important fields for each row: State Postal, FIPS Code, County Name, TOTAL VOTES CAST, numDemVotes, numGOPVotes
-    desiredColumnsL = ["State_Postal", "FIPS_Code", "County_Name", "TOTAL_VOTES_CAST",
-                       "numDemVotes", "numGOPVotes"]
-    finalTableDF = countyTableDF.reindex(columns=desiredColumnsL)
-    
-    return finalTableDF
+#    # Remove entries that correspond to the voting records of the entire state
+#    validRowsLC = fullTableDF.FIPS_Code.astype(bool)
+#    countyTableDF = fullTableDF[validRowsLC]
+#    
+#    # Extract the correct information for each row
+#    for iRow in range(countyTableDF.shape[0]):
+#      countyTableDF[iRow].numDemVotes = extract_votes(countyTableDF[iRow], 1)
+#      countyTableDF[iRow].numGOPVotes = extract_votes(countyTableDF[iRow], 2)
+#      
+#    # Extract the important fields for each row: State Postal, FIPS Code, County Name, TOTAL VOTES CAST, numDemVotes, numGOPVotes
+#    desiredColumnsL = ["State_Postal", "FIPS_Code", "County_Name", "TOTAL_VOTES_CAST",
+#                       "numDemVotes", "numGOPVotes"]
+#    finalTableDF = countyTableDF.reindex(columns=desiredColumnsL)
+#    
+#    return finalTableDF
+    return fullTableDF
     
     
     
