@@ -5,6 +5,8 @@ Created on Fri Feb 28 07:56:38 2014
 @author: Eric Smith
 
 Determines whether a correlation exists between 2008/2012 voting shifts and unemployment shifts
+
+2014-03-11: The problem is that numDemVotes and numGFPVotes are saved as fields in read_election_2012_file, but they're all NaNs
 """
 
 import read_election_2012_file
