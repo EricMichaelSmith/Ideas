@@ -6,6 +6,7 @@ Created 2014-03-03
 Reads in 2012 US election results, from http://www.theguardian.com/news/datablog/2012/nov/07/us-2012-election-county-results-download#data
 """
 
+import numpy as np
 import os
 import pandas as pd
 
@@ -26,12 +27,12 @@ def main():
     countyTableDF = fullTableDF[validRowsLC]
     
     # Extract the correct information for each row
-    for iRow in range(countyTableDF.shape[0]):
-      print iRow
-      if iRow == 3160:
-        print countyTableDF.iloc[iRow]
-      countyTableDF.iloc[iRow].numDemVotes = extract_votes(countyTableDF.iloc[iRow], "Dem")
-      countyTableDF.iloc[iRow].numGOPVotes = extract_votes(countyTableDF.iloc[iRow], "GOP")
+    numRows = countyTableDF.shape[0]
+    countyTableDF.loc["numDemVotes"] = [np.nan] * numRows
+    countyTableDF.loc["numGOPVotes"] = [np.nan] * numRows
+    for iRow in countyTableDF.index:
+      countyTableDF.loc[iRow, "numDemVotes"] = extract_votes(countyTableDF.loc[iRow], "Dem")
+      countyTableDF.loc[iRow, "numGOPVotes"] = extract_votes(countyTableDF.loc[iRow], "GOP")
       
     # Extract the important fields for each row: State Postal, FIPS Code, County Name, TOTAL VOTES CAST, numDemVotes, numGOPVotes
     desiredColumnsL = ["State Postal", "FIPS Code", "County Name", "TOTAL VOTES CAST",

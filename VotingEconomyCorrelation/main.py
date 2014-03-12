@@ -6,7 +6,8 @@ Created on Fri Feb 28 07:56:38 2014
 
 Determines whether a correlation exists between 2008/2012 voting shifts and unemployment shifts
 
-2014-03-11: The problem is that numDemVotes and numGFPVotes are saved as fields in read_election_2012_file, but they're all NaNs
+2014-03-12: Error on line 31 of read_election_2012_file: raise ValueError('Must have equal len keys and value'
+ValueError: Must have equal len keys and valuewhen setting with an iterable
 """
 
 import read_election_2012_file
@@ -19,8 +20,8 @@ reload(read_unemployment_file)
 def main():
     
     # Demo: reading in one of the unemployment files
-    fileNameS_T = ('laucnty08.txt', 'laucnty09.txt', 'laucnty10.txt', 'laucnty11.txt',
-                  'laucnty12.txt')
+    fileNameS_T = ("laucnty08.txt", "laucnty09.txt", "laucnty10.txt", "laucnty11.txt",
+                  "laucnty12.txt")
     unemploymentDF_L = list()
     for fileNameS in fileNameS_T:
       unemploymentDF_L.append(read_unemployment_file.main(fileNameS))
