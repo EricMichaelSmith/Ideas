@@ -6,10 +6,11 @@ Created on Fri Feb 28 07:56:38 2014
 
 Determines whether a correlation exists between 2008/2012 voting shifts and unemployment shifts
 
-2014-03-12: Error on line 31 of read_election_2012_file: raise ValueError('Must have equal len keys and value'
-ValueError: Must have equal len keys and valuewhen setting with an iterable
+2014-03-13: Run the appropriate shapefile-to-pandas function in https://github.com/GeoDaSandbox/sandbox
 """
 
+import read_election_2008_file
+reload(read_election_2008_file)
 import read_election_2012_file
 reload(read_election_2012_file)
 import read_unemployment_file
@@ -19,14 +20,17 @@ reload(read_unemployment_file)
 
 def main():
     
-    # Demo: reading in one of the unemployment files
+    # Reading in the unemployment files
     fileNameS_T = ("laucnty08.txt", "laucnty09.txt", "laucnty10.txt", "laucnty11.txt",
                   "laucnty12.txt")
     unemploymentDF_L = list()
     for fileNameS in fileNameS_T:
       unemploymentDF_L.append(read_unemployment_file.main(fileNameS))
+      
+    # Reading in the 2008 election file
+    election2008_DF = read_election_2008_file.main()
     
-    # Demo: reading in the 2012 election file
+    # Reading in the 2012 election file
     election2012_DF = read_election_2012_file.main()
   
   ## Load data: FIPS code, state name, county name, shape data, percentage voting for Obama in 2008 and 2012, percentage voting for McCain/Romney in 2008 and 2012, unemployment data per county for 2008, 2009, 2010, 2011, 2012
@@ -48,4 +52,4 @@ def main():
   
     # [[[obviously temporary]]]
 #    return (unemploymentDF_L, election2012_DF)
-    return (unemploymentDF_L, election2012_DF)
+    return (unemploymentDF_L, election2008_DF, election2012_DF)
