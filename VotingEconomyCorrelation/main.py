@@ -6,7 +6,12 @@ Created on Fri Feb 28 07:56:38 2014
 
 Determines whether a correlation exists between 2008/2012 voting shifts and unemployment shifts
 
-2014-03-13: Run the appropriate shapefile-to-pandas function in https://github.com/GeoDaSandbox/sandbox
+
+2014-03-14: 
+
+For reading in shapefiles, use module shapefile, which saves to a list (see https://code.google.com/p/pyshp/)
+
+See http://sensitivecities.com/so-youd-like-to-make-a-map-using-python-EN.html#.UyLy4fldXi2 for the rest
 """
 
 import read_election_2008_file
