@@ -12,6 +12,7 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import pandas as pd
 import shapefile
 import sys
 
@@ -40,12 +41,18 @@ def plot_county_results():
     
     See http://stackoverflow.com/questions/15968762/shapefile-and-matplotlib-plot-polygon-collection-of-shapefile-coordinates for how to quickly plot shapes from a shapefile
     """
-        
+    
+    # Read in shapedata    
     filePathS = os.path.join(config.basePathS, "election_statistics", "2008",
                              "elpo08p020")
     fullSF = shapefile.Reader(filePathS)
     shapeL = fullSF.shapes()
     numShapes = len(shapeL)
+    
+    # Read in election data
+    fullDF = main()
+    fullDF.loc[:, 'DemIsHigher'] = (fullDF.loc[:, u'VOTE_DEM'] > fullDF.loc[:, u'VOTE_REP'])
+    # {{{probably read in the records of fullSF? or somehow locate the fips codes such that for every lShape below, you can look up the fips code and use that to determine whether, from fullDF.DemIsHigher, the shape should be blue or red}}}    
 
     # Plot figure
     fig = plt.figure()
@@ -62,6 +69,7 @@ def plot_county_results():
         for lPart in range(len(shapeFileParts)):
             thisShapesPatches.append(patches.Polygon(
                 pointsA[allPartsL[lPart]:allPartsL[lPart+1]]))
+        
         ax.add_collection(PatchCollection(thisShapesPatches,
                                           facecolor=(0, 0, 1)))
     
