@@ -51,8 +51,8 @@ def plot_county_results():
     
     # Read in election data
     fullDF = main()
+    assert fullDF.shape[0] == numShapes
     fullDF.loc[:, 'DemIsHigher'] = (fullDF.loc[:, u'VOTE_DEM'] > fullDF.loc[:, u'VOTE_REP'])
-    # {{{probably read in the records of fullSF? or somehow locate the fips codes such that for every lShape below, you can look up the fips code and use that to determine whether, from fullDF.DemIsHigher, the shape should be blue or red}}}    
 
     # Plot figure
     fig = plt.figure()
@@ -70,8 +70,13 @@ def plot_county_results():
             thisShapesPatches.append(patches.Polygon(
                 pointsA[allPartsL[lPart]:allPartsL[lPart+1]]))
         
+        # Determine shape color
+        if fullDF.loc[lShape, 'DemIsHigher']:
+            shapeColorT = (0, 0, 1)
+        else:
+            shapeColorT = (1, 0, 0)        
         ax.add_collection(PatchCollection(thisShapesPatches,
-                                          facecolor=(0, 0, 1)))
+                                          facecolor=shapeColorT))
     
     shapeBoundsR = np.empty(4)
     shapeBoundsR[0] = np.amin(shapeBoundsA[:, 0], 0)
