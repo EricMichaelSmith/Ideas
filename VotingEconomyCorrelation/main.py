@@ -7,9 +7,9 @@ Created on Fri Feb 28 07:56:38 2014
 Determines whether a correlation exists between 2008/2012 voting shifts and unemployment shifts
 
 
-2014-03-16: 
+2014-03-17: 
 
-In election_2008.plot_county_results, read in the DataFrame from main, create a boolean value of whether Dem > Rep, and then color the counties using that
+Okay, the coloring clearly isn't right - Manhattan did not vote for McCain in '08, for instance. See what's going on and try it again, and compare it to the correct map (on Wikipedia or wherever).
 """
 
 import election_2008
