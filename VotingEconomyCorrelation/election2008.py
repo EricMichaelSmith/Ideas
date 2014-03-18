@@ -12,7 +12,6 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-import pandas as pd
 import shapefile
 import sys
 
@@ -30,6 +29,7 @@ def main():
     filePathS = os.path.join(config.basePathS, "election_statistics", "2008",
                              "elpo08p020.dbf")
     fullDF = dbf2df(filePathS)
+    fullDF = fullDF.convert_objects(convert_numeric=True)
     
     return fullDF
     
@@ -52,7 +52,8 @@ def plot_county_results():
     # Read in election data
     fullDF = main()
     assert fullDF.shape[0] == numShapes
-    fullDF.loc[:, 'DemIsHigher'] = (fullDF.loc[:, u'VOTE_DEM'] > fullDF.loc[:, u'VOTE_REP'])
+    fullDF.loc[:, 'DemIsHigher'] = (fullDF.loc[:, u'VOTE_DEM'] >
+                                    fullDF.loc[:, u'VOTE_REP'])
 
     # Plot figure
     fig = plt.figure()
@@ -76,9 +77,9 @@ def plot_county_results():
         else:
             shapeColorT = (1, 0, 0)        
         ax.add_collection(PatchCollection(thisShapesPatches,
-                                          facecolor=shapeColorT))
+                                          color=shapeColorT))
     
-    shapeBoundsR = np.empty(4)
+    shapeBoundsR = np.empty(4)    
     shapeBoundsR[0] = np.amin(shapeBoundsA[:, 0], 0)
     shapeBoundsR[1] = np.amin(shapeBoundsA[:, 1], 0)
     shapeBoundsR[2] = np.amax(shapeBoundsA[:, 2], 0)

@@ -7,15 +7,15 @@ Created on Fri Feb 28 07:56:38 2014
 Determines whether a correlation exists between 2008/2012 voting shifts and unemployment shifts
 
 
-2014-03-17: 
+2014-03-18:
 
-Okay, the coloring clearly isn't right - Manhattan did not vote for McCain in '08, for instance. See what's going on and try it again, and compare it to the correct map (on Wikipedia or wherever).
+Do election2012.extract_votes_all_rows() and use it to replace election2012.extract_votes().
 """
 
-import election_2008
-reload(election_2008)
-import election_2012
-reload(election_2012)
+import election2008
+reload(election2008)
+import election2012
+reload(election2012)
 import unemployment
 reload(unemployment)
 
@@ -31,13 +31,13 @@ def main():
       unemploymentDF_L.append(unemployment.main(fileNameS))
       
     # Reading in the 2008 election file
-    election2008_DF = election_2008.main()
+    election2008_DF = election2008.main()
     
     # Reading in the 2012 election file
-    election2012_DF = election_2012.main()
+    election2012_DF = election2012.main()
     
     # [[[Test: plotting a map of counties]]]
-    election_2008.plot_county_results
+    election2008.plot_county_results
   
   ## Load data: FIPS code, state name, county name, shape data, percentage voting for Obama in 2008 and 2012, percentage voting for McCain/Romney in 2008 and 2012, unemployment data per county for 2008, 2009, 2010, 2011, 2012
   
