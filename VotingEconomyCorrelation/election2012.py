@@ -28,33 +28,36 @@ def main():
     countyDF = fullDF.loc[validRowsLC, :]
     
     # Extract the correct information for each row
-    countyDF.loc[:, "numDemVotes"] = np.nan
-    countyDF.loc[:, "numGOPVotes"] = np.nan
-    for iRow in countyDF.index:
-        print(iRow)
-        countyDF.loc[iRow, "numDemVotes"] = extract_votes(countyDF.loc[iRow], "Dem")
-        countyDF.loc[iRow, "numGOPVotes"] = extract_votes(countyDF.loc[iRow], "GOP")
-      
+    countyDF.loc[:, "numDemVotes"] = extract_votes_all_rows(countyDF, "Dem")
+    countyDF.loc[:, "numGOPVotes"] = extract_votes_all_rows(countyDF, "GOP")
+
     # Extract the important fields for each row: State Postal, FIPS Code, County Name, TOTAL VOTES CAST, numDemVotes, numGOPVotes
     desiredColumnsL = ["State Postal", "FIPS Code", "County Name", "TOTAL VOTES CAST",
                        "numDemVotes", "numGOPVotes"]
     finalDF = countyDF.reindex(columns=desiredColumnsL)
     
     return finalDF
-    
-    
-    
-def extract_votes(oneCountyDF, partyS):
-    if oneCountyDF.Party == partyS:
-        return oneCountyDF.Votes
-    else:
-        iParty = 0
-        while True:
-            iParty += 1
-            if oneCountyDF.loc["Party." + str(iParty)] == partyS:
-                return oneCountyDF.loc["Votes." + str(iParty)]
 
 
 
 def extract_votes_all_rows(countyDF, partyS):
+    numCounties = countyDF.shape[0]
+    partyVotesSR = pd.Series([np.nan]*numCounties, index=countyDF.index)
+    numExtractedVotes = 0
     
+    # Set votes from "Party" column
+    isCorrectPartyB_SR = countyDF.loc[:, "Party"] == partyS
+    partyVotesSR.loc[isCorrectPartyB_SR] = \
+        countyDF.loc[isCorrectPartyB_SR, "Votes"]
+    numExtractedVotes += np.sum(isCorrectPartyB_SR)
+    
+    # Set votes from "Party.1", "Party.2", etc. columns
+    iParty = 0
+    while numExtractedVotes != numCounties:
+        iParty += 1
+        isCorrectPartyB_SR = countyDF.loc[:, "Party." + str(iParty)] == partyS
+        partyVotesSR.loc[isCorrectPartyB_SR] = \
+            countyDF.loc[isCorrectPartyB_SR, "Votes." + str(iParty)]
+        numExtractedVotes += np.sum(isCorrectPartyB_SR)
+        
+    return partyVotesSR

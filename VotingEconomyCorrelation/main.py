@@ -7,9 +7,9 @@ Created on Fri Feb 28 07:56:38 2014
 Determines whether a correlation exists between 2008/2012 voting shifts and unemployment shifts
 
 
-2014-03-18:
+2014-03-19:
 
-Do election2012.extract_votes_all_rows() and use it to replace election2012.extract_votes().
+Okay, I'd say then next step is aligning the entries in election2008 with those in election2012 and trying to plot the election2012 county data using the election2008 shapefile
 """
 
 import election2008
