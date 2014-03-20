@@ -60,14 +60,14 @@ def plot_county_results():
     ax = fig.add_subplot(1, 1, 1)
     shapeBoundsA = np.empty((numShapes, 4))
     shapeBoundsA[:] = np.nan
-    for lShape in range(numShapes):
+    for lShape in xrange(numShapes):
         shapeBoundsA[lShape, :] = shapeL[lShape].bbox
 
         thisShapesPatches = []
         pointsA = np.array(shapeL[lShape].points)
         shapeFileParts = shapeL[lShape].parts
         allPartsL = list(shapeFileParts) + [pointsA.shape[0]]
-        for lPart in range(len(shapeFileParts)):
+        for lPart in xrange(len(shapeFileParts)):
             thisShapesPatches.append(patches.Polygon(
                 pointsA[allPartsL[lPart]:allPartsL[lPart+1]]))
         
