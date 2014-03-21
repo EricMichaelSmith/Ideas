@@ -12,7 +12,7 @@ import config
 
 
 
-def main(fileNameS):
+def main(fileNameS, year):
     pathS = os.path.join(config.basePathS, "unemployment_statistics")
     conversionD = {'state_fips_code': (lambda x: str(x)),
                    'county_fips_code': (lambda x: str(x)),
@@ -29,6 +29,9 @@ def main(fileNameS):
                           skipfooter=3,
                           skiprows=6,
                           widths=[18, 7, 6, 50, 4, 14, 13, 11, 9])
-    tableDF.fips_code = tableDF.state_fips_code + tableDF.county_fips_code
-                                   
-    return tableDF
+    tableDF.loc[:, 'fips_code'] = tableDF.state_fips_code + tableDF.county_fips_code
+    
+    finalDF = tableDF.loc[:, ['fips_code', 'unemployed_rate']]
+    finalDF.columns = ['FIPS', 'URate' + str(year)]
+    
+    return finalDF

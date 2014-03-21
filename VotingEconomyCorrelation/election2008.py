@@ -31,7 +31,10 @@ def main():
     fullDF = dbf2df(filePathS)
     fullDF = fullDF.convert_objects(convert_numeric=True)
     
-    return fullDF
+    finalDF = fullDF.loc[:, ['FIPS', 'TOTAL_VOTE', 'VOTE_DEM', 'VOTE_REP']]
+    finalDF.columns = ['FIPS', 'Election2008Total', 'Election2008Dem', 'Election2008Rep']
+    
+    return finalDF
     
     
 

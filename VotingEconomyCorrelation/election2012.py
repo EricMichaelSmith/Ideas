@@ -32,9 +32,11 @@ def main():
     countyDF.loc[:, "numGOPVotes"] = extract_votes_all_rows(countyDF, "GOP")
 
     # Extract the important fields for each row: State Postal, FIPS Code, County Name, TOTAL VOTES CAST, numDemVotes, numGOPVotes
-    desiredColumnsL = ["State Postal", "FIPS Code", "County Name", "TOTAL VOTES CAST",
+    desiredColumnsL = ["State Postal", "County Name", "FIPS Code", "TOTAL VOTES CAST",
                        "numDemVotes", "numGOPVotes"]
     finalDF = countyDF.reindex(columns=desiredColumnsL)
+    finalDF.columns = ["State", "County", "FIPS", "Election2012Total",
+                       "Election2012Dem", "Election2012Rep"]
     
     return finalDF
 
