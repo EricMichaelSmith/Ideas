@@ -11,32 +11,37 @@ import os
 import pandas as pd
 
 import config
+reload(config)
 
 
 
 def main():
   
     # Read in 2012 election data
-    filePathS = os.path.join(config.basePathS, "election_statistics",
-                             "US_elect_county__2012.csv")
+    filePathS = os.path.join(config.basePathS, 'election_statistics',
+                             'US_elect_county__2012.csv')
     fullDF = pd.read_csv(filePathS,
                               low_memory=False)
     fullDF = fullDF.convert_objects(convert_numeric=True)
     
     # Remove entries that correspond to the voting records of the entire state
-    validRowsLC = fullDF.loc[:, "FIPS Code"].astype(bool)
+    validRowsLC = fullDF.loc[:, 'FIPS Code'].astype(bool)
     countyDF = fullDF.loc[validRowsLC, :]
     
     # Extract the correct information for each row
-    countyDF.loc[:, "numDemVotes"] = extract_votes_all_rows(countyDF, "Dem")
-    countyDF.loc[:, "numGOPVotes"] = extract_votes_all_rows(countyDF, "GOP")
+    countyDF.loc[:, 'numDemVotes'] = extract_votes_all_rows(countyDF, 'Dem')
+    countyDF.loc[:, 'numGOPVotes'] = extract_votes_all_rows(countyDF, 'GOP')
 
     # Extract the important fields for each row: State Postal, FIPS Code, County Name, TOTAL VOTES CAST, numDemVotes, numGOPVotes
-    desiredColumnsL = ["State Postal", "County Name", "FIPS Code", "TOTAL VOTES CAST",
-                       "numDemVotes", "numGOPVotes"]
-    finalDF = countyDF.reindex(columns=desiredColumnsL)
-    finalDF.columns = ["State", "County", "FIPS", "Election2012Total",
-                       "Election2012Dem", "Election2012Rep"]
+    desiredColumnsL = ['FIPS Code', 'TOTAL VOTES CAST',
+                       'numDemVotes', 'numGOPVotes']
+    partialDF = countyDF.reindex(columns=desiredColumnsL)
+    partialDF.columns = ['FIPS', 'Election2012Total',
+                       'Election2012Dem', 'Election2012Rep']
+                       
+    # Sum all entries with the same FIPS code (since the New England states report vote totals by municipality instead of by city)
+    groupedPartialDF = partialDF.groupby('FIPS')
+    finalDF = groupedPartialDF.aggregate(np.sum)
     
     return finalDF
 
@@ -44,22 +49,22 @@ def main():
 
 def extract_votes_all_rows(countyDF, partyS):
     numCounties = countyDF.shape[0]
-    partyVotesSR = pd.Series([np.nan]*numCounties, index=countyDF.index)
+    partyVotesSR = pd.Series(index=countyDF.index)
     numExtractedVotes = 0
     
-    # Set votes from "Party" column
-    isCorrectPartyB_SR = countyDF.loc[:, "Party"] == partyS
+    # Set votes from 'Party' column
+    isCorrectPartyB_SR = countyDF.loc[:, 'Party'] == partyS
     partyVotesSR.loc[isCorrectPartyB_SR] = \
-        countyDF.loc[isCorrectPartyB_SR, "Votes"]
+        countyDF.loc[isCorrectPartyB_SR, 'Votes']
     numExtractedVotes += np.sum(isCorrectPartyB_SR)
     
-    # Set votes from "Party.1", "Party.2", etc. columns
+    # Set votes from 'Party.1', 'Party.2', etc. columns
     iParty = 0
     while numExtractedVotes != numCounties:
         iParty += 1
-        isCorrectPartyB_SR = countyDF.loc[:, "Party." + str(iParty)] == partyS
+        isCorrectPartyB_SR = countyDF.loc[:, 'Party.' + str(iParty)] == partyS
         partyVotesSR.loc[isCorrectPartyB_SR] = \
-            countyDF.loc[isCorrectPartyB_SR, "Votes." + str(iParty)]
+            countyDF.loc[isCorrectPartyB_SR, 'Votes.' + str(iParty)]
         numExtractedVotes += np.sum(isCorrectPartyB_SR)
         
     return partyVotesSR

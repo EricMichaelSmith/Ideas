@@ -16,6 +16,7 @@ import shapefile
 import sys
 
 import config
+reload(config)
 
 sys.path.append(config.GeoDaSandboxPathS)
 from pyGDsandbox.dataIO import dbf2df
@@ -26,13 +27,17 @@ def main():
     Read in the election data shapefile as a DataFrame
     """
     
-    filePathS = os.path.join(config.basePathS, "election_statistics", "2008",
-                             "elpo08p020.dbf")
+    filePathS = os.path.join(config.basePathS, 'election_statistics', '2008',
+                             'elpo08p020.dbf')
     fullDF = dbf2df(filePathS)
     fullDF = fullDF.convert_objects(convert_numeric=True)
-    
+        
     finalDF = fullDF.loc[:, ['FIPS', 'TOTAL_VOTE', 'VOTE_DEM', 'VOTE_REP']]
     finalDF.columns = ['FIPS', 'Election2008Total', 'Election2008Dem', 'Election2008Rep']
+
+    finalDF = finalDF.drop_duplicates()
+    finalDF = finalDF.sort(columns='FIPS')
+    finalDF = finalDF.set_index('FIPS')
     
     return finalDF
     
@@ -46,8 +51,8 @@ def plot_county_results():
     """
     
     # Read in shapedata    
-    filePathS = os.path.join(config.basePathS, "election_statistics", "2008",
-                             "elpo08p020")
+    filePathS = os.path.join(config.basePathS, 'election_statistics', '2008',
+                             'elpo08p020')
     fullSF = shapefile.Reader(filePathS)
     shapeL = fullSF.shapes()
     numShapes = len(shapeL)
