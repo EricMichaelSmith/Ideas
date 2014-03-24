@@ -6,7 +6,7 @@ Created on Fri Feb 28 07:56:38 2014
 
 Determines whether a correlation exists between 2008/2012 voting shifts and unemployment shifts
 
-2014-03-23: Merge with the shapefile data. Take care of all of the idiosyncrasies in the data: missing values, misaligned counties, etc. Probably just delete all of the Alaska data.
+2014-03-23: Take care of all of the idiosyncrasies in the data: missing values, misaligned counties, etc. Probably just delete all of the Alaska data.
 """
 
 import os
@@ -48,7 +48,7 @@ def main():
     
     # Merging DataFrames
     fullDF = fipsDF.join(election2008_DF, how='outer')
-    fullDF = fipsDF.join(election2012_DF, how='outer')
+    fullDF = fullDF.join(election2012_DF, how='outer')
     for unemploymentDF in unemploymentDF_L:
         fullDF = fullDF.join(unemploymentDF, how='outer')
     

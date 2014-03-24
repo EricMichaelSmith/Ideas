@@ -9,5 +9,5 @@ Provides for global variables throughout all of VotingEconomyCorrelation
 
 
 
-basePathS = r"C:\E\GitHub\Computing\EricMichaelSmith\Ideas\VotingEconomyCorrelation"
-GeoDaSandboxPathS = r"C:\E\GitHub\Computing\GeoDaSandbox\sandbox"
+basePathS = r'C:\E\GitHub\Computing\EricMichaelSmith\Ideas\VotingEconomyCorrelation'
+GeoDaSandboxPathS = r'C:\E\GitHub\Computing\GeoDaSandbox\sandbox'

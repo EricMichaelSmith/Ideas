@@ -12,6 +12,7 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import pandas as pd
 import shapefile
 import sys
 
@@ -25,16 +26,42 @@ from pyGDsandbox.dataIO import dbf2df
 def main():
     """
     Read in the election data shapefile as a DataFrame
+    
+    See http://stackoverflow.com/questions/15968762/shapefile-and-matplotlib-plot-polygon-collection-of-shapefile-coordinates for how to quickly plot shapes from a shapefile
     """
     
     filePathS = os.path.join(config.basePathS, 'election_statistics', '2008',
                              'elpo08p020.dbf')
+                             
+    # Read fields into DataFrame
     fullDF = dbf2df(filePathS)
     fullDF = fullDF.convert_objects(convert_numeric=True)
         
     finalDF = fullDF.loc[:, ['FIPS', 'TOTAL_VOTE', 'VOTE_DEM', 'VOTE_REP']]
     finalDF.columns = ['FIPS', 'Election2008Total', 'Election2008Dem', 'Election2008Rep']
 
+    # Read in shapefile data
+    fullSF = shapefile.Reader(filePathS)
+    shapeL = fullSF.shapes()
+    numShapes = len(shapeL)    
+    assert fullDF.shape[0] == numShapes
+    shapeBoundsDF = pd.DataFrame(np.empty((numShapes, 4)),
+                                 columns=['ShapeXMin', 'ShapeYMin',
+                                          'ShapeXMax', 'ShapeYMax'])
+    patchesDF = pd.DataFrame(np.empty(numShapes), columns=['ShapePatches'])
+    for lShape in xrange(numShapes):
+        shapeBoundsDF.iloc[lShape, :] = shapeL[lShape].bbox
+        
+        thisShapesPatches = []
+        pointsA = np.array(shapeL[lShape].points)
+        shapeFileParts = shapeL[lShape].parts
+        allPartsL = list(shapeFileParts) + [pointsA.shape[0]]
+        for lPart in xrange(len(shapeFileParts)):
+            thisShapesPatches.append(patches.Polygon(
+                pointsA[allPartsL[lPart]:allPartsL[lPart+1]]))
+        patchesDF.iloc[lShape, 0] = tuple(thisShapesPatches)
+    finalDF = pd.concat([finalDF, shapeBoundsDF, patchesDF], axis=1)
+    
     finalDF = finalDF.drop_duplicates()
     finalDF = finalDF.sort(columns='FIPS')
     finalDF = finalDF.set_index('FIPS')
