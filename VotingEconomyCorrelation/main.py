@@ -6,7 +6,7 @@ Created on Fri Feb 28 07:56:38 2014
 
 Determines whether a correlation exists between 2008/2012 voting shifts and unemployment shifts
 
-2014-03-25: Assign color values to the DataFrame properly and finish the test of plotting election 2008 data from fullDF. Once that's done, see which counties aren't being plotted and take care of all of the idiosyncrasies in the data: missing values, misaligned counties, etc. Probably just delete all of the Alaska data. Do you want to eventually change all of the inner joins back to outer joins, or will it not matter in the end?
+2014-03-25: Think about whether you really want to include shapefiles in the same DataFrame as your stats: another way to do it would be to bind FIPS codes to shapefiles in a separate DataFrame in election2008() and then just read all matching shapes for a given FIPS code every time you want to plot. Assign color values to the DataFrame properly and finish the test of plotting election 2008 data from fullDF. Once that's done, see which counties aren't being plotted and take care of all of the idiosyncrasies in the data: missing values, misaligned counties, etc. Probably just delete all of the Alaska data. Do you want to eventually change all of the inner joins back to outer joins, or will it not matter in the end?
 """
 
 from matplotlib.collections import PatchCollection
@@ -64,23 +64,32 @@ def main():
     fullDF.to_csv(os.path.join(config.basePathS, 'fullDF.csv'))
     
     # [[[testing plotting]]]
+#    colorDF = pd.DataFrame(np.empty((fullDF.shape[0], 3)),
+#                           columns=['Red','Green','Blue'],
+#                           index=fullDF.index)
+#    fullDF = pd.concat([fullDF, colorDF], axis=1)
     fullDF.loc[:, 'DemIsHigher2008'] = (fullDF.loc[:, 'Election2008Dem'] >
                                         fullDF.loc[:, 'Election2008Rep'])
-#    fullDF.loc[fullDF.loc[:, 'DemIsHigher2008'], 'ShapeColor'] = \
+    fullDF.to_csv(os.path.join(config.basePathS, 'fullDFWithBool.csv'))
+#    fullDF.loc[fullDF.loc[:, 'DemIsHigher2008'], ['Red','Green','Blue']] = \
 #        [(0, 0, 1)] * np.sum(fullDF.loc[:, 'DemIsHigher2008'])
-    fullDF.loc[fullDF.loc[:, 'DemIsHigher2008'], ['Red', 'Green', 'Blue']] = \
-        [(0, 0, 1)] * np.sum(fullDF.loc[:, 'DemIsHigher2008'])
-    fullDF.loc[~fullDF.loc[:, 'DemIsHigher2008'], 'ShapeColor'] = \
-        [(1, 0, 0)] * np.sum(~fullDF.loc[:, 'DemIsHigher2008'])
-    fullDF.to_csv(os.path.join(config.basePathS, 'fullDFWithColors.csv'))
+#    fullDF.loc[~fullDF.loc[:, 'DemIsHigher2008'], ['Red', 'Green', 'Blue']] = \
+#        [(1, 0, 0)] * np.sum(~fullDF.loc[:, 'DemIsHigher2008'])
+#    fullDF.to_csv(os.path.join(config.basePathS, 'fullDFWithColors.csv'))
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
-    pdb.set_trace()
-    for shapePatch, shapeColorT in zip(fullDF.loc[:, 'ShapePatches'],
-                                       fullDF.loc[:, 'ShapeColor']):
-        ax.add_collection(PatchCollection(shapePatch, color=tuple(shapeColorT)))
-    ax.set_xlim(np.amin(fullDF.ShapeXMin), np.amax(fullDF.ShapeXMax))
-    ax.set_ylim(np.amin(fullDF.ShapeYMin), np.amax(fullDF.ShapeYMax))
+    for lFIPS in fullDF.index:
+        print(lFIPS)
+        print(fullDF.loc[lFIPS, 'DemIsHigher2008'])
+        pdb.set_trace()
+        if fullDF.loc[lFIPS, 'DemIsHigher2008']:
+            shapeColorT = (0, 0, 1)
+        else:
+            shapeColorT = (1, 0, 0)      
+        ax.add_collection(PatchCollection(fullDF.loc[lFIPS, 'ShapePatches'],
+                                          color=shapeColorT))
+        ax.set_xlim(np.amin(fullDF.ShapeXMin), np.amax(fullDF.ShapeXMax))
+        ax.set_ylim(np.amin(fullDF.ShapeYMin), np.amax(fullDF.ShapeYMax))
     
   # Transform all of that data into a usable form
   # {{{}}}
