@@ -6,14 +6,14 @@ Created on Fri Feb 28 07:56:38 2014
 
 Determines whether a correlation exists between 2008/2012 voting shifts and unemployment shifts
 
-2014-03-25: Think about whether you really want to include shapefiles in the same DataFrame as your stats: another way to do it would be to bind FIPS codes to shapefiles in a separate DataFrame in election2008() and then just read all matching shapes for a given FIPS code every time you want to plot. Assign color values to the DataFrame properly and finish the test of plotting election 2008 data from fullDF. Once that's done, see which counties aren't being plotted and take care of all of the idiosyncrasies in the data: missing values, misaligned counties, etc. Probably just delete all of the Alaska data. Do you want to eventually change all of the inner joins back to outer joins, or will it not matter in the end?
+2014-03-26: In the election2008 file if possible, fix the Ottawa, OH issue and the Miami issue. Then, play around with more sophisticated color maps and plotting other things.
 """
 
 from matplotlib.collections import PatchCollection
+import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-import pdb
 
 import config
 reload(config)
@@ -34,7 +34,7 @@ def main():
     fipsDF = fips.main()
     
     # Reading in the 2008 election file
-    election2008_DF = election2008.main()
+    (election2008_DF, shapeIndexL, shapeL) = election2008.main()
     
     # Reading in the 2012 election file
     election2012_DF = election2012.main()
@@ -45,16 +45,9 @@ def main():
     yearL = range(2008, 2013)
     unemploymentDF_L = list()
     for fileNameS, year in zip(fileNameS_L, yearL):
-      unemploymentDF_L.append(unemployment.main(fileNameS, year))    
-    
-    # [[[Test: plotting a map of counties]]]
-#    election2008.plot_county_results
+      unemploymentDF_L.append(unemployment.main(fileNameS, year))
     
     # Merging DataFrames
-#    fullDF = fipsDF.join(election2008_DF, how='outer')
-#    fullDF = fullDF.join(election2012_DF, how='outer')
-#    for unemploymentDF in unemploymentDF_L:
-#        fullDF = fullDF.join(unemploymentDF, how='outer')
     fullDF = fipsDF.join(election2008_DF, how='inner')
     fullDF = fullDF.join(election2012_DF, how='inner')
     for unemploymentDF in unemploymentDF_L:
@@ -64,32 +57,47 @@ def main():
     fullDF.to_csv(os.path.join(config.basePathS, 'fullDF.csv'))
     
     # [[[testing plotting]]]
-#    colorDF = pd.DataFrame(np.empty((fullDF.shape[0], 3)),
-#                           columns=['Red','Green','Blue'],
-#                           index=fullDF.index)
-#    fullDF = pd.concat([fullDF, colorDF], axis=1)
     fullDF.loc[:, 'DemIsHigher2008'] = (fullDF.loc[:, 'Election2008Dem'] >
                                         fullDF.loc[:, 'Election2008Rep'])
     fullDF.to_csv(os.path.join(config.basePathS, 'fullDFWithBool.csv'))
-#    fullDF.loc[fullDF.loc[:, 'DemIsHigher2008'], ['Red','Green','Blue']] = \
-#        [(0, 0, 1)] * np.sum(fullDF.loc[:, 'DemIsHigher2008'])
-#    fullDF.loc[~fullDF.loc[:, 'DemIsHigher2008'], ['Red', 'Green', 'Blue']] = \
-#        [(1, 0, 0)] * np.sum(~fullDF.loc[:, 'DemIsHigher2008'])
-#    fullDF.to_csv(os.path.join(config.basePathS, 'fullDFWithColors.csv'))
+    # [[[probably delete this?]]]
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
+    shapeBoundsAllShapesL = [float('inf'), float('inf'), float('-inf'), float('-inf')]
     for lFIPS in fullDF.index:
-        print(lFIPS)
-        print(fullDF.loc[lFIPS, 'DemIsHigher2008'])
-        pdb.set_trace()
-        if fullDF.loc[lFIPS, 'DemIsHigher2008']:
+        print('FIPS: ' + str(lFIPS))
+        if fullDF.loc[lFIPS, 'DemIsHigher2008'].any():
+#        if fullDF.loc[lFIPS, 'DemIsHigher2008'].any():
+        # [[[I don't want to use the '.any()': that's a silly work-around for the fact that Ottawa, OH has two conflicting entries in the 2008 election data for some reason.]]]
             shapeColorT = (0, 0, 1)
         else:
-            shapeColorT = (1, 0, 0)      
-        ax.add_collection(PatchCollection(fullDF.loc[lFIPS, 'ShapePatches'],
-                                          color=shapeColorT))
-        ax.set_xlim(np.amin(fullDF.ShapeXMin), np.amax(fullDF.ShapeXMax))
-        ax.set_ylim(np.amin(fullDF.ShapeYMin), np.amax(fullDF.ShapeYMax))
+            shapeColorT = (1, 0, 0)
+        
+        iShapeL = [i for i,j in enumerate(shapeIndexL) if j==lFIPS]
+        for iShape in iShapeL:
+            print(iShape)
+            
+            shapeBoundsThisShapeL = shapeL[iShape].bbox
+            shapeBoundsAllShapesL[0] = \
+                min(shapeBoundsThisShapeL[0], shapeBoundsAllShapesL[0])
+            shapeBoundsAllShapesL[1] = \
+                min(shapeBoundsThisShapeL[1], shapeBoundsAllShapesL[1])
+            shapeBoundsAllShapesL[2] = \
+                max(shapeBoundsThisShapeL[2], shapeBoundsAllShapesL[2])
+            shapeBoundsAllShapesL[3] = \
+                max(shapeBoundsThisShapeL[3], shapeBoundsAllShapesL[3])
+            
+            thisShapesPatches = []
+            pointsA = np.array(shapeL[iShape].points)
+            shapeFileParts = shapeL[iShape].parts
+            allPartsL = list(shapeFileParts) + [pointsA.shape[0]]
+            for lPart in xrange(len(shapeFileParts)):
+                thisShapesPatches.append(patches.Polygon(
+                    pointsA[allPartsL[lPart]:allPartsL[lPart+1]]))
+            ax.add_collection(PatchCollection(thisShapesPatches,
+                                              color=shapeColorT))
+    ax.set_xlim(shapeBoundsAllShapesL[0], shapeBoundsAllShapesL[2])
+    ax.set_ylim(shapeBoundsAllShapesL[1], shapeBoundsAllShapesL[3])
     
   # Transform all of that data into a usable form
   # {{{}}}

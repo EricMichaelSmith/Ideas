@@ -39,34 +39,20 @@ def main():
         
     finalDF = fullDF.loc[:, ['FIPS', 'TOTAL_VOTE', 'VOTE_DEM', 'VOTE_REP']]
     finalDF.columns = ['FIPS', 'Election2008Total', 'Election2008Dem', 'Election2008Rep']
+    shapeIndexL = finalDF.FIPS.tolist()
 
     # Read in shapefile data
     fullSF = shapefile.Reader(filePathS)
     shapeL = fullSF.shapes()
-    numShapes = len(shapeL)    
-    assert fullDF.shape[0] == numShapes
-    shapeBoundsDF = pd.DataFrame(np.empty((numShapes, 4)),
-                                 columns=['ShapeXMin', 'ShapeYMin',
-                                          'ShapeXMax', 'ShapeYMax'])
-    patchesDF = pd.DataFrame(np.empty(numShapes), columns=['ShapePatches'])
-    for lShape in xrange(numShapes):
-        shapeBoundsDF.iloc[lShape, :] = shapeL[lShape].bbox
-        
-        thisShapesPatches = []
-        pointsA = np.array(shapeL[lShape].points)
-        shapeFileParts = shapeL[lShape].parts
-        allPartsL = list(shapeFileParts) + [pointsA.shape[0]]
-        for lPart in xrange(len(shapeFileParts)):
-            thisShapesPatches.append(patches.Polygon(
-                pointsA[allPartsL[lPart]:allPartsL[lPart+1]]))
-        patchesDF.iloc[lShape, 0] = tuple(thisShapesPatches)
-    finalDF = pd.concat([finalDF, shapeBoundsDF, patchesDF], axis=1)
+    del fullSF
     
     finalDF = finalDF.drop_duplicates()
     finalDF = finalDF.sort(columns='FIPS')
     finalDF = finalDF.set_index('FIPS')
-    
-    return finalDF
+    finalDF = finalDF[pd.notnull(finalDF['Election2008Total'])]
+    # This is a work-around for a NaN somewhere in Michigan.
+        
+    return (finalDF, shapeIndexL, shapeL)
     
     
 
@@ -82,6 +68,7 @@ def plot_county_results():
                              'elpo08p020')
     fullSF = shapefile.Reader(filePathS)
     shapeL = fullSF.shapes()
+    del fullSF
     numShapes = len(shapeL)
     
     # Read in election data
