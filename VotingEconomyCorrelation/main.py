@@ -61,8 +61,8 @@ def main():
                                         fullDF.loc[:, 'Election2008Rep'])
     fullDF.to_csv(os.path.join(config.basePathS, 'fullDFWithBool.csv'))
     # [[[probably delete this?]]]
-    fig = plt.figure()
-    ax = fig.add_subplot(1, 1, 1)
+    shapeFig = plt.figure()
+    ax = shapeFig.add_subplot(1, 1, 1)
     shapeBoundsAllShapesL = [float('inf'), float('inf'), float('-inf'), float('-inf')]
     for lFIPS in fullDF.index:
         if fullDF.loc[lFIPS, 'DemIsHigher2008']:
@@ -93,6 +93,15 @@ def main():
                                               color=shapeColorT))
     ax.set_xlim(shapeBoundsAllShapesL[0], shapeBoundsAllShapesL[2])
     ax.set_ylim(shapeBoundsAllShapesL[1], shapeBoundsAllShapesL[3])
+    
+    # Make a basic plot of unemployment shift vs. election shift
+    percentDem2008_SR = fullDF.Election2008Dem / fullDF.Election2008Total
+    percentDem2012_SR = fullDF.Election2012Dem / fullDF.Election2012Total
+    demShiftSR = percentDem2012_SR - percentDem2008_SR
+    uRateShiftSR = fullDF.URate2012 - fullDF.URate2008
+    scatterFig = plt.figure()
+    ax = scatterFig.add_subplot(1, 1, 1)
+    plt.scatter(demShiftSR, uRateShiftSR)
     
   # Transform all of that data into a usable form
   # {{{}}}
