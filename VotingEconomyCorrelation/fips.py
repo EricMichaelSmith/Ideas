@@ -31,6 +31,11 @@ def main():
     
     finalDF = fullDF.loc[:, ['FIPS', 'county', 'state']]
     finalDF = finalDF.sort(columns='FIPS')
+    
     finalDF = finalDF.set_index('FIPS')
+    
+    # Using the now-current FIPS code for Miami-Dade County, FL
+    finalDF = finalDF.rename(index={12025: 12086})
+    finalDF.loc[12086, 'county'] = 'Miami-Dade'
 
     return finalDF

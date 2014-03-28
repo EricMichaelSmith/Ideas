@@ -46,6 +46,10 @@ def main():
     shapeL = fullSF.shapes()
     del fullSF
     
+    # Removing the second (incorrect) entry for Ottawa County, OH
+    finalDF = finalDF.loc[~finalDF['FIPS'].isin([39123]) |
+                          ~finalDF['Election2008Dem'].isin([12064])]
+    
     finalDF = finalDF.drop_duplicates()
     finalDF = finalDF.sort(columns='FIPS')
     finalDF = finalDF.set_index('FIPS')

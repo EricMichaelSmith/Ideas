@@ -6,7 +6,7 @@ Created on Fri Feb 28 07:56:38 2014
 
 Determines whether a correlation exists between 2008/2012 voting shifts and unemployment shifts
 
-2014-03-26: In the election2008 file if possible, fix the Ottawa, OH issue and the Miami issue. Then, play around with more sophisticated color maps and plotting other things.
+2014-03-27: Play around with more sophisticated color maps and plotting other things: obviously, whether counties with more employment have less of a rightward shift in 2012! Maybe also plot state borders.
 """
 
 from matplotlib.collections import PatchCollection
@@ -65,18 +65,13 @@ def main():
     ax = fig.add_subplot(1, 1, 1)
     shapeBoundsAllShapesL = [float('inf'), float('inf'), float('-inf'), float('-inf')]
     for lFIPS in fullDF.index:
-        print('FIPS: ' + str(lFIPS))
-        if fullDF.loc[lFIPS, 'DemIsHigher2008'].any():
-#        if fullDF.loc[lFIPS, 'DemIsHigher2008'].any():
-        # [[[I don't want to use the '.any()': that's a silly work-around for the fact that Ottawa, OH has two conflicting entries in the 2008 election data for some reason.]]]
+        if fullDF.loc[lFIPS, 'DemIsHigher2008']:
             shapeColorT = (0, 0, 1)
         else:
             shapeColorT = (1, 0, 0)
         
         iShapeL = [i for i,j in enumerate(shapeIndexL) if j==lFIPS]
-        for iShape in iShapeL:
-            print(iShape)
-            
+        for iShape in iShapeL:            
             shapeBoundsThisShapeL = shapeL[iShape].bbox
             shapeBoundsAllShapesL[0] = \
                 min(shapeBoundsThisShapeL[0], shapeBoundsAllShapesL[0])

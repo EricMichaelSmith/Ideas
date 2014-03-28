@@ -32,7 +32,8 @@ def main(fileNameS, year):
                           skipfooter=3,
                           skiprows=6,
                           widths=[18, 7, 6, 50, 4, 14, 13, 11, 9])
-    tableDF.loc[:, 'fips_code'] = (tableDF.state_fips_code + tableDF.county_fips_code).astype(int)
+    tableDF.loc[:, 'fips_code'] = (tableDF.state_fips_code + 
+                                   tableDF.county_fips_code).astype(int)
     
     finalDF = tableDF.loc[:, ['fips_code', 'unemployed_rate']]
     finalDF.columns = ['FIPS', 'URate' + str(year)]
