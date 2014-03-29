@@ -57,15 +57,15 @@ def main():
     fullDF.to_csv(os.path.join(config.basePathS, 'fullDF.csv'))
     
     # [[[testing plotting]]]
-    fullDF.loc[:, 'DemIsHigher2008'] = (fullDF.loc[:, 'Election2008Dem'] >
-                                        fullDF.loc[:, 'Election2008Rep'])
+    fullDF.loc[:, 'DemIsHigher2012'] = (fullDF.loc[:, 'Election2012Dem'] >
+                                        fullDF.loc[:, 'Election2012Rep'])
     fullDF.to_csv(os.path.join(config.basePathS, 'fullDFWithBool.csv'))
     # [[[probably delete this?]]]
     shapeFig = plt.figure()
     ax = shapeFig.add_subplot(1, 1, 1)
     shapeBoundsAllShapesL = [float('inf'), float('inf'), float('-inf'), float('-inf')]
     for lFIPS in fullDF.index:
-        if fullDF.loc[lFIPS, 'DemIsHigher2008']:
+        if fullDF.loc[lFIPS, 'DemIsHigher2012']:
             shapeColorT = (0, 0, 1)
         else:
             shapeColorT = (1, 0, 0)
@@ -91,8 +91,10 @@ def main():
                     pointsA[allPartsL[lPart]:allPartsL[lPart+1]]))
             ax.add_collection(PatchCollection(thisShapesPatches,
                                               color=shapeColorT))
-    ax.set_xlim(shapeBoundsAllShapesL[0], shapeBoundsAllShapesL[2])
-    ax.set_ylim(shapeBoundsAllShapesL[1], shapeBoundsAllShapesL[3])
+    ax.set_xlim(-127, -65)
+    ax.set_ylim(23, 50)
+#    ax.set_xlim(shapeBoundsAllShapesL[0], shapeBoundsAllShapesL[2])
+#    ax.set_ylim(shapeBoundsAllShapesL[1], shapeBoundsAllShapesL[3])
     
     # Make a basic plot of unemployment shift vs. election shift
     percentDem2008_SR = fullDF.Election2008Dem / fullDF.Election2008Total
@@ -101,7 +103,12 @@ def main():
     uRateShiftSR = fullDF.URate2012 - fullDF.URate2008
     scatterFig = plt.figure()
     ax = scatterFig.add_subplot(1, 1, 1)
-    plt.scatter(demShiftSR, uRateShiftSR)
+    plt.scatter(uRateShiftSR, 100*demShiftSR)
+    ax.set_xlim(-5, 10)
+    ax.set_ylim(-25, 15)
+    
+    # Quickly plot all of the counties in the bottom right clump
+    inBottomRightClumpSR = 
     
   # Transform all of that data into a usable form
   # {{{}}}
