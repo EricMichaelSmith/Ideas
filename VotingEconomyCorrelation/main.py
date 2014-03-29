@@ -14,6 +14,7 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import scipy as sp
 
 import config
 reload(config)
@@ -103,12 +104,44 @@ def main():
     uRateShiftSR = fullDF.URate2012 - fullDF.URate2008
     scatterFig = plt.figure()
     ax = scatterFig.add_subplot(1, 1, 1)
-    plt.scatter(uRateShiftSR, 100*demShiftSR)
+    plt.scatter(uRateShiftSR, 100*demShiftSR, edgecolors='none')
+    ax.set_xlim(-5, 10)
+    ax.set_ylim(-25, 15)
+    print(sp.stats.pearsonr(uRateShiftSR, demShiftSR))
+    
+    
+    ## Quickly plot all of the counties in the bottom right clump
+    inClumpB_SR = (uRateShiftSR > 2.57) & (100*demShiftSR < -11.6)
+    
+    clumpScatterFig = plt.figure()
+    ax = clumpScatterFig.add_subplot(1, 1, 1)
+    plt.scatter(uRateShiftSR[~inClumpB_SR], 100*demShiftSR[~inClumpB_SR],
+                c='k', edgecolors='none')
+    plt.scatter(uRateShiftSR[inClumpB_SR], 100*demShiftSR[inClumpB_SR],
+                c='g', edgecolors='none')
     ax.set_xlim(-5, 10)
     ax.set_ylim(-25, 15)
     
-    # Quickly plot all of the counties in the bottom right clump
-    inBottomRightClumpSR = 
+    clumpShapeFig = plt.figure()
+    ax = clumpShapeFig.add_subplot(1, 1, 1)
+    for lFIPS in fullDF.index:
+        if inClumpB_SR.loc[lFIPS]:
+            shapeColorT = (0, 1, 0)
+        else:
+            shapeColorT = (0, 0, 0)
+        iShapeL = [i for i,j in enumerate(shapeIndexL) if j==lFIPS]
+        for iShape in iShapeL:
+            thisShapesPatches = []
+            pointsA = np.array(shapeL[iShape].points)
+            shapeFileParts = shapeL[iShape].parts
+            allPartsL = list(shapeFileParts) + [pointsA.shape[0]]
+            for lPart in xrange(len(shapeFileParts)):
+                thisShapesPatches.append(patches.Polygon(
+                    pointsA[allPartsL[lPart]:allPartsL[lPart+1]]))
+            ax.add_collection(PatchCollection(thisShapesPatches,
+                                              color=shapeColorT))
+    ax.set_xlim(-127, -65)
+    ax.set_ylim(23, 50)
     
   # Transform all of that data into a usable form
   # {{{}}}
