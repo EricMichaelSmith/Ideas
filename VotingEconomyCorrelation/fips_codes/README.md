@@ -1,1 +1,0 @@
-From https://github.com/hadley/data-counties/blob/master/county-fips.csv (Hadley Wickham)
